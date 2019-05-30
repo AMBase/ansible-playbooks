@@ -1,1 +1,5 @@
 ansible_user: root
+
+app_user: app
+app_path_home: "/home/{{ app_user }}"
+app_path_public: "{{ app_path_home }}/public"

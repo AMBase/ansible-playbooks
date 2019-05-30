@@ -1,2 +1,29 @@
-- name: Hello world
-  shell: uname -a
+- name: add repo
+  copy: src=nginx.repo dest=/etc/yum.repos.d/nginx.repo
+
+- name: install
+  yum: name=nginx state=installed
+
+- name: install
+  user:
+    name: nginx
+    groups: "{{ app_user }}"
+
+- name: copy conf
+  template:
+    src: default.j2
+    dest: /etc/nginx/conf.d/default.conf
+  notify: restart nginx
+
+- name: add firewalld rule
+  firewalld:
+    zone: public
+    port: "{{ item.port }}"
+    permanent: yes
+    state: enabled
+  with_items:
+    - { port: 80/tcp }
+    - { port: 443/tcp }
+  notify:
+    - restart nginx
+    - restart firewalld

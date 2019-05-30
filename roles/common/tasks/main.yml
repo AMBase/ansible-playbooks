@@ -1,0 +1,23 @@
+- name: disable selinux after reboot
+  selinux:
+    state: disabled
+
+- name: disable selinux until rebooted
+  command: setenforce 0
+  ignore_errors: yes
+
+- name: add user
+  user:
+    name: "{{ app_user }}"
+
+- name: chmod user folder
+  file:
+    name: "{{ app_path_home }}"
+    mode: "750"
+
+- name: copy public
+  become: yes
+  become_user: "{{ app_user }}"
+  copy:
+    src: public/
+    dest: "{{ app_path_public }}"
